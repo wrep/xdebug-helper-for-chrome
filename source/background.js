@@ -1,12 +1,5 @@
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab)
+function fetchStatusAndUpdate(tabId)
 {
-	// We only react on a complete load of a http(s) page,
-	//  only then we're sure the content.js is loaded.
-	if (changeInfo.status !== "complete" || tab.url.indexOf("http") !== 0)
-	{
-		return;
-	}
-
 	// Prep some variables
 	var ideKey = "XDEBUG_ECLIPSE",
 		match = true,
@@ -53,6 +46,23 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab)
 			updateIcon(response.status, tabId);
 		}
 	);
+}
+
+chrome.tabs.onActivated.addListener(function(info)
+{
+	fetchStatusAndUpdate(info.tabId);
+});
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab)
+{
+	// We only react on a complete load of a http(s) page,
+	//  only then we're sure the content.js is loaded.
+	if (changeInfo.status !== "complete" || tab.url.indexOf("http") !== 0)
+	{
+		return;
+	}
+
+	fetchStatusAndUpdate(tabId);
 });
 
 chrome.commands.onCommand.addListener(function(command)
