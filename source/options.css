@@ -119,7 +119,7 @@ a {
 }
 
 /* Disable Popup */
-.disable-popup-saved {
+#disable-popup-saved {
   color: #5cb85c;
   font-weight: bold;
   margin-left: 5px;

@@ -2,6 +2,10 @@
 
 	// setTimeout() return value
 	let disablePopupTimeout;
+	const slctIde = document.getElementById("ide");
+	const inptIdeKey = document.getElementById("idekey");
+	const inptRacetrigger = document.getElementById("tracetrigger");
+	const inptProfiletrigger = document.getElementById("profiletrigger");
 
 	function save_options()
 	{
@@ -23,75 +27,70 @@
 
 		if (idekey == "XDEBUG_ECLIPSE" || idekey == "netbeans-xdebug" || idekey == "macgdbp" || idekey == "PHPSTORM")
 		{
-			$("#ide").val(idekey);
-			$("#idekey").prop('disabled', true);
+			slctIde.value = idekey;
+			inptIdeKey.disabled = true;
 		}
 		else
 		{
-			$("#ide").val("null");
-			$("#idekey").prop('disabled', false);
+			slctIde.value = "null";
+			inptIdeKey.disabled = false;
 		}
-		$('#idekey').val(idekey);
+		inptIdeKey.value = idekey;
 
 		// Restore Trace Triggers
 		var traceTrigger = localStorage["xdebugTraceTrigger"];
-		if (traceTrigger !== null)	{
-			$("#tracetrigger").val(traceTrigger);
-		} else {
-			$("#tracetrigger").val(null);
-		}
+		inptRacetrigger.value = traceTrigger || "";
 
 		// Restore Profile Triggers
 		var profileTrigger = localStorage["xdebugProfileTrigger"];
-		if (profileTrigger !== null)	{
-			$("#profiletrigger").val(profileTrigger);
-		} else {
-			$("#profiletrigger").val(null);
-		}
+		inptProfiletrigger.value = profileTrigger || "";
 
 		// Restore Disable Popup
 		document.getElementById('disable-popup').checked = (localStorage.xdebugDisablePopup === '1') ? true : false;
 	}
 
-	$(function()
+	(function()
 	{
-		$("#ide").change(function ()
+		slctIde.addEventListener("change", function ()
 		{
-			if ($("#ide").val() != "null")
+			if (slctIde.value != "null")
 			{
-				$("#idekey").prop('disabled', true);
-				$("#idekey").val($("#ide").val());
+				inptIdeKey.disabled = true;
+				inptIdeKey.value = inptIdeKey.value;
 
 				save_options();
 			}
 			else
 			{
-				$("#idekey").prop('disabled', false);
+				inptIdeKey.disabled = false;
 			}
 		});
 
-		$("#idekey").change(save_options);
+		inptIdeKey.addEventListener("change", save_options);
 
 		// Persist Disable Popup on onChange event
-		$('#disable-popup').change(disablePopupChanged);
+		document.getElementById("disable-popup").addEventListener("change", disablePopupChanged);
 
-		$('.save-button').click(save_options);
+		const saveBtns = document.getElementsByClassName("save-button");
+		for (const saveBtn of saveBtns) {
+			saveBtn.addEventListener("click", save_options);
+		}
 
 		restore_options();
-	});
+	})();
 
 	/**
 	 * Disable Popup checkbox changed, persist it.
 	 */
 	function disablePopupChanged() {
-		const $disablePopupSaved = $('.disable-popup-saved');
+		const disablePopupSaved = document.getElementById("disable-popup-saved");
 
-		$disablePopupSaved.addClass('show');
+		disablePopupSaved.classList.add("show");
 
 		// First clear interval
 		clearInterval(disablePopupTimeout);
 		// Hide after 2 seconds
-		disablePopupTimeout = setTimeout(() => $disablePopupSaved.removeClass('show'), 2000);
+		disablePopupTimeout = setTimeout(() => disablePopupSaved.classList.remove("show"), 2000);
 
 		// Persist
 		save_options();
